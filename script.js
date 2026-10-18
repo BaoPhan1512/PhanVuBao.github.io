@@ -72,3 +72,33 @@
     if (year) year.textContent = new Date().getFullYear();
   });
 })();
+const c = document.getElementById('particles'), x = c.getContext('2d');
+let w, h, p = [];
+function size(){ w = c.width = innerWidth; h = c.height = innerHeight; }
+addEventListener('resize', size); size();
+
+const N = innerWidth < 700 ? 35 : 70;
+for (let i = 0; i < N; i++)
+  p.push({x: Math.random()*w, y: Math.random()*h,
+          vx: (Math.random()-.5)*.4, vy: (Math.random()-.5)*.4});
+
+function draw(){
+  x.clearRect(0, 0, w, h);
+  for (const a of p){
+    a.x += a.vx; a.y += a.vy;
+    if (a.x < 0 || a.x > w) a.vx *= -1;
+    if (a.y < 0 || a.y > h) a.vy *= -1;
+    x.fillStyle = 'rgba(255,255,255,.6)';
+    x.beginPath(); x.arc(a.x, a.y, 1.5, 0, 6.283); x.fill();
+  }
+  for (let i = 0; i < p.length; i++)
+    for (let j = i+1; j < p.length; j++){
+      const d = Math.hypot(p[i].x-p[j].x, p[i].y-p[j].y);
+      if (d < 130){
+        x.strokeStyle = 'rgba(255,255,255,' + (.15*(1 - d/130)) + ')';
+        x.beginPath(); x.moveTo(p[i].x, p[i].y); x.lineTo(p[j].x, p[j].y); x.stroke();
+      }
+    }
+  requestAnimationFrame(draw);
+}
+draw();
